@@ -2,11 +2,11 @@
 
 [![Build Status](https://travis-ci.org/matheus208/mongoid-pending_changes.svg?branch=master)](https://travis-ci.org/matheus208/mongoid-pending_changes)
 
-version 0.0.0
+version 0.1.0
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/mongoid/pending_changes`. To experiment with that code, run `bin/console` for an interactive prompt.
+Mongoid::PendingChanges adds an option to keep further changes from modifying the record, pushing them to a changelist instead.
 
-TODO: Delete this and the text above, and describe your gem
+This is an initial effort to develop an approval system to control changes to collections. 
 
 ## Installation
 
@@ -26,7 +26,24 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Add the following line to the models you want to track
+
+```
+class Model
+    include Mongoid::PendingChanges
+    
+    field :example, type: String
+end
+```
+
+Then, when you want to have changes that require approval, call
+
+```
+model.push_for_approval({example: 'new example value'})
+```
+
+Your model will keep the original value, but a new entry will be added to the `changelist` property, with all changes and an incrementing ID.
+
 
 ## Development
 
@@ -36,5 +53,8 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/mongoid-pending_changes.
+Bug reports and pull requests are welcome on GitHub at https://github.com/matheus208/mongoid-pending_changes.
+
+## TODO list
+
 
