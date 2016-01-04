@@ -2,11 +2,16 @@
 
 [![Build Status](https://travis-ci.org/matheus208/mongoid-pending_changes.svg?branch=master)](https://travis-ci.org/matheus208/mongoid-pending_changes)
 
-version 0.1.0
+version 0.1.1
 
 Mongoid::PendingChanges adds an option to keep further changes from modifying the record, pushing them to a changelist instead.
 
 This is an initial effort to develop an approval system to control changes to collections. 
+
+## Changelog
+
+Version 0.1.1: Fixing a bug where data created before the gem inclusion would cause an exception due to missing fields.
+
 
 ## Installation
 
