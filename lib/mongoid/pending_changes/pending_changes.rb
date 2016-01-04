@@ -27,6 +27,7 @@ module Mongoid
                              time: Time.now,
                              approved: false
 
+        self.changelist = [] unless self.changelist
         self.changelist.push version
 
         self.save
