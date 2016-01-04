@@ -20,13 +20,14 @@ module Mongoid
 
       def push_for_approval(changes, meta = {})
         #TODO Think of multithreading?
-        self.last_version += 1
+        self.last_version = (self.last_version || 0) + 1
 
         version = meta.merge number: self.last_version,
                              data: changes,
                              time: Time.now,
                              approved: false
 
+        self.changelist = [] unless self.changelist
         self.changelist.push version
 
         self.save

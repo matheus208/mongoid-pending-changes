@@ -2,19 +2,22 @@
 
 [![Build Status](https://travis-ci.org/matheus208/mongoid-pending_changes.svg?branch=master)](https://travis-ci.org/matheus208/mongoid-pending_changes)
 
-version 0.1.0
+[![Gem Version](https://badge.fury.io/rb/mongoid-pending_changes.svg)](https://badge.fury.io/rb/mongoid-pending_changes)
 
 Mongoid::PendingChanges adds an option to keep further changes from modifying the record, pushing them to a changelist instead.
 
 This is an initial effort to develop an approval system to control changes to collections. 
 
+## Change Log
+
+v0.1.2:
+Fixing a bug where records created before the gem was used would cause an exception due to the required fields being nil.
+
 ## Installation
 
 Add this line to your application's Gemfile:
 
-```ruby
-gem 'mongoid-pending_changes'
-```
+    gem 'mongoid-pending_changes'
 
 And then execute:
 
