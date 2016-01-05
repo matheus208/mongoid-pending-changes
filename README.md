@@ -10,7 +10,7 @@ This is an initial effort to develop an approval system to control changes to co
 
 ## Change Log
 
-v0.2.0:
+v0.2.0a:
 Adding method `#get_change_number`, which returns the change from the changelist with the specified number
 
 v0.1.2:
