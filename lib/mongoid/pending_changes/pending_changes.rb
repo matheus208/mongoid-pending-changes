@@ -38,6 +38,9 @@ module Mongoid
         self.changelist.each do |cl|
           return cl if cl[:number] == number
         end
+
+        #If we got here, the number does not exist, return nil.
+        return nil
       end
 
       def apply_change(number, meta = {})
