@@ -53,11 +53,25 @@ module Mongoid
                               cl.merge! meta
                               #Set the backup and other fields
                               cl[:backup] = backup
-                              cl[:time] = Time.now
+                              cl[:updated_at] = Time.now
                               cl[:approved] = true
                             end
                             cl
                         end
+        self.changelist = new_changelist
+        self.save!
+      end
+
+      def reject_change(number, meta = {})
+        return unless number
+        new_changelist = self.changelist.map do |cl|
+          if cl[:number] == number
+            #Merge the change with the meta
+            cl.merge! meta
+            cl[:updated_at] = Time.now
+          end
+          cl
+        end
         self.changelist = new_changelist
         self.save!
       end

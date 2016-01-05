@@ -10,6 +10,9 @@ This is an initial effort to develop an approval system to control changes to co
 
 ## Change Log
 
+v0.3.0:
+Adding methods '#apply_change' and '#reject_change'
+
 v0.2.0a:
 Adding method `#get_change_number`, which returns the change from the changelist with the specified number
 
@@ -45,7 +48,7 @@ end
 Then, when you want to have changes that require approval, call
 
 ```
-model.push_for_approval({example: 'new example value'})
+model.push_for_approval {example: 'new example value'}
 ```
 
 Your model will keep the original value, but a new entry will be added to the `changelist` property, with all changes and an incrementing ID.
@@ -53,9 +56,18 @@ Your model will keep the original value, but a new entry will be added to the `c
 If you need to recover a specific change from the changelist, you can use 
 
 ```
-change = mode.get_change_number(1)
-change[:data][:example] == 'new example value'
+change = model.get_change_number 1   
 ```
+
+Then you can use `change[:data][:example] == 'new example value'`, for example.
+
+If you want to apply a change to the model, you can call
+
+```
+model.apply_change 1   
+```
+
+Then you can use `model.example == 'new example_value'`. Also, `model.changelist[1][:backup]` will store the old value, if there was one.
 
 ## Development
 
