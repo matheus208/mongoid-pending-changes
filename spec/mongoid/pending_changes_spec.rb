@@ -58,7 +58,6 @@ describe Mongoid::PendingChanges do
     end
   end
 
-
   describe '#get_change_number' do
     before :each do
       test = Test.create! name: 'Old name',
@@ -116,6 +115,28 @@ describe Mongoid::PendingChanges do
     it 'records the time that the change was applied' do
       Test.last.apply_change 3
       expect(Test.last.get_change_number(3)[:updated_at]).to  be_within(1).of(Time.now)
+    end
+
+  end
+
+  describe '#reject_change' do
+    before :each do
+      test = Test.create! name: 'Old name'
+
+      test.push_for_approval name: 'John',
+                             age: 30
+
+      test.push_for_approval age: 10
+    end
+
+    it 'does not apply change' do
+      Test.last.reject_change 1
+      expect(Test.last.name).to eq 'Old name'
+    end
+
+    it 'adds any info we provide' do
+      Test.last.reject_change 2, {status: 'Rejected'}
+      expect(Test.last.name).to eq 'Old name'
     end
 
   end
