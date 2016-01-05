@@ -139,5 +139,10 @@ describe Mongoid::PendingChanges do
       expect(Test.last.name).to eq 'Old name'
     end
 
+    it 'records the time that the change was rejected' do
+      Test.last.reject_change 1
+      expect(Test.last.get_change_number(1)[:updated_at]).to  be_within(1).of(Time.now)
+    end
+
   end
 end
