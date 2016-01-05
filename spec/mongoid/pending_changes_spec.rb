@@ -75,4 +75,44 @@ describe Mongoid::PendingChanges do
     it {expect(Test.last.get_change_number(2)[:data][:age]).to eq 21}
     it {expect(Test.last.get_change_number(3)[:number]).to eq 3}
   end
+
+  describe '#apply_change' do
+    before :each do
+      test = Test.create! name: 'Old name'
+
+      test.push_for_approval name: 'John',
+                             age: 30
+
+      test.push_for_approval name: 'Mary',
+                             age: 50
+    end
+
+    it 'applies the change by number' do
+      Test.last.apply_change 2
+      expect(Test.last.name).to eq 'Mary'
+    end
+
+    it 'changes the status to approved' do
+      Test.last.apply_change 3
+      expect(Test.last.get_change_number(3)[:approved]).to be true
+    end
+
+    it 'updates other fields if provided' do
+      status_text = 'Approved'
+      Test.last.apply_change 1, {status: status_text}
+      expect(Test.last.get_change_number(1)[:status]).to eq status_text
+    end
+
+    it 'backs up the fields that were overwritten by the change' do
+      Test.last.apply_change 2
+      old = {name: 'Old name'}
+      expect(Test.last.get_change_number(2)[:backup]).to eq old
+    end
+
+    it 'records the time that the change was applied' do
+      Test.last.apply_change 3
+      expect(Test.last.get_change_number(3)[:updated_at]).to  be_within(1).of(Time.now)
+    end
+
+  end
 end
