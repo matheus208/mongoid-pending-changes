@@ -74,6 +74,7 @@ describe Mongoid::PendingChanges do
     it {expect(Test.last.get_change_number(1)[:data][:name]).to eq  'New name 1'}
     it {expect(Test.last.get_change_number(2)[:data][:age]).to eq 21}
     it {expect(Test.last.get_change_number(3)[:number]).to eq 3}
+
     it {expect(Test.last.get_change_number(0)).to be nil}
     it {expect(Test.last.get_change_number(4)).to be nil}
   end
