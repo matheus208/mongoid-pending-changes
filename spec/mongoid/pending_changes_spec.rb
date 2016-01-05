@@ -88,6 +88,8 @@ describe Mongoid::PendingChanges do
 
       test.push_for_approval name: 'Mary',
                              age: 50
+
+      test.push_for_approval age: 10
     end
 
     it 'applies the change by number' do
@@ -108,8 +110,7 @@ describe Mongoid::PendingChanges do
 
     it 'backs up the fields that were overwritten by the change' do
       Test.last.apply_change 2
-      old = {name: 'Old name'}
-      expect(Test.last.get_change_number(2)[:backup]).to eq old
+      expect(Test.last.get_change_number(2)[:backup][:name]).to eq 'Old name'
     end
 
     it 'records the time that the change was applied' do

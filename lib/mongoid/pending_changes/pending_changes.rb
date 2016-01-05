@@ -59,6 +59,7 @@ module Mongoid
                             cl
                         end
         self.changelist = new_changelist
+        self.save!
       end
 
       private
@@ -74,6 +75,8 @@ module Mongoid
             #Update
             self[field] = value
           end
+
+          backup
 
         end
 
