@@ -40,6 +40,40 @@ module Mongoid
         end
       end
 
+      def apply_change(number, meta = {})
+        return unless number
+        new_changelist = self.changelist.map do |cl|
+                            if cl[:number] == number
+                              #Apply the changes to the main object and return the old values
+                              backup = apply(cl[:data])
+                              #Merge the change with the meta
+                              cl.merge! meta
+                              #Set the backup and other fields
+                              cl[:backup] = backup
+                              cl[:time] = Time.now
+                              cl[:approved] = true
+                            end
+                            cl
+                        end
+        self.changelist = new_changelist
+      end
+
+      private
+        def apply(data)
+          backup = {}
+
+          #For each data we want to update...
+          data.each do |field, value|
+            #if it exists, back it up
+            if self[field]
+              backup[field] = self[field]
+            end
+            #Update
+            self[field] = value
+          end
+
+        end
+
     end
   end
 end
