@@ -58,4 +58,21 @@ describe Mongoid::PendingChanges do
     end
   end
 
+
+  describe '#get_change_number' do
+    before :each do
+      test = Test.create! name: 'Old name',
+                          age: 20
+      test.push_for_approval name: 'New name 1'
+
+      test.push_for_approval age: 21
+
+      test.push_for_approval name: 'New name 2',
+                             age: 22
+    end
+
+    it {expect(Test.last.get_change_number(1)[:data][:name]).to eq  'New name 1'}
+    it {expect(Test.last.get_change_number(2)[:data][:age]).to eq 21}
+    it {expect(Test.last.get_change_number(3)[:number]).to eq 3}
+  end
 end

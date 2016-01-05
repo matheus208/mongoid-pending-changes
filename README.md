@@ -10,6 +10,9 @@ This is an initial effort to develop an approval system to control changes to co
 
 ## Change Log
 
+v0.2.0:
+Adding method `#get_change_number`, which returns the change from the changelist with the specified number
+
 v0.1.2:
 Fixing a bug where records created before the gem was used would cause an exception due to the required fields being nil.
 
@@ -47,6 +50,12 @@ model.push_for_approval({example: 'new example value'})
 
 Your model will keep the original value, but a new entry will be added to the `changelist` property, with all changes and an incrementing ID.
 
+If you need to recover a specific change from the changelist, you can use 
+
+```
+change = mode.get_change_number(1)
+change[:data][:example] == 'new example value'
+```
 
 ## Development
 
@@ -59,5 +68,5 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 Bug reports and pull requests are welcome on GitHub at https://github.com/matheus208/mongoid-pending_changes.
 
 ## TODO list
-
+ * Write the TODO list
 

@@ -33,6 +33,13 @@ module Mongoid
         self.save
       end
 
+      def get_change_number(number)
+        return unless number && self.changelist
+        self.changelist.each do |cl|
+          return cl if cl[:number] == number
+        end
+      end
+
     end
   end
 end
