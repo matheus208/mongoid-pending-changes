@@ -1,5 +1,5 @@
 module Mongoid
   module PendingChanges
-    VERSION = "0.2.0a"
+    VERSION = "0.3.0"
   end
 end

@@ -38,7 +38,61 @@ module Mongoid
         self.changelist.each do |cl|
           return cl if cl[:number] == number
         end
+
+        #If we got here, the number does not exist, return nil.
+        return nil
       end
+
+      def apply_change(number, meta = {})
+        return unless number
+        new_changelist = self.changelist.map do |cl|
+                            if cl[:number] == number
+                              #Apply the changes to the main object and return the old values
+                              backup = apply(cl[:data])
+                              #Merge the change with the meta
+                              cl.merge! meta
+                              #Set the backup and other fields
+                              cl[:backup] = backup
+                              cl[:updated_at] = Time.now
+                              cl[:approved] = true
+                            end
+                            cl
+                        end
+        self.changelist = new_changelist
+        self.save!
+      end
+
+      def reject_change(number, meta = {})
+        return unless number
+        new_changelist = self.changelist.map do |cl|
+          if cl[:number] == number
+            #Merge the change with the meta
+            cl.merge! meta
+            cl[:updated_at] = Time.now
+          end
+          cl
+        end
+        self.changelist = new_changelist
+        self.save!
+      end
+
+      private
+        def apply(data)
+          backup = {}
+
+          #For each data we want to update...
+          data.each do |field, value|
+            #if it exists, back it up
+            if self[field]
+              backup[field] = self[field]
+            end
+            #Update
+            self[field] = value
+          end
+
+          backup
+
+        end
 
     end
   end

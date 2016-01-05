@@ -58,7 +58,6 @@ describe Mongoid::PendingChanges do
     end
   end
 
-
   describe '#get_change_number' do
     before :each do
       test = Test.create! name: 'Old name',
@@ -74,5 +73,76 @@ describe Mongoid::PendingChanges do
     it {expect(Test.last.get_change_number(1)[:data][:name]).to eq  'New name 1'}
     it {expect(Test.last.get_change_number(2)[:data][:age]).to eq 21}
     it {expect(Test.last.get_change_number(3)[:number]).to eq 3}
+
+    it {expect(Test.last.get_change_number(0)).to be nil}
+    it {expect(Test.last.get_change_number(4)).to be nil}
+  end
+
+  describe '#apply_change' do
+    before :each do
+      test = Test.create! name: 'Old name'
+
+      test.push_for_approval name: 'John',
+                             age: 30
+
+      test.push_for_approval name: 'Mary',
+                             age: 50
+
+      test.push_for_approval age: 10
+    end
+
+    it 'applies the change by number' do
+      Test.last.apply_change 2
+      expect(Test.last.name).to eq 'Mary'
+    end
+
+    it 'changes the status to approved' do
+      Test.last.apply_change 3
+      expect(Test.last.get_change_number(3)[:approved]).to be true
+    end
+
+    it 'updates other fields if provided' do
+      status_text = 'Approved'
+      Test.last.apply_change 1, {status: status_text}
+      expect(Test.last.get_change_number(1)[:status]).to eq status_text
+    end
+
+    it 'backs up the fields that were overwritten by the change' do
+      Test.last.apply_change 2
+      expect(Test.last.get_change_number(2)[:backup][:name]).to eq 'Old name'
+    end
+
+    it 'records the time that the change was applied' do
+      Test.last.apply_change 3
+      expect(Test.last.get_change_number(3)[:updated_at]).to  be_within(1).of(Time.now)
+    end
+
+  end
+
+  describe '#reject_change' do
+    before :each do
+      test = Test.create! name: 'Old name'
+
+      test.push_for_approval name: 'John',
+                             age: 30
+
+      test.push_for_approval age: 10
+    end
+
+    it 'does not apply change' do
+      Test.last.reject_change 1
+      expect(Test.last.name).to eq 'Old name'
+    end
+
+    it 'adds any info we provide' do
+      Test.last.reject_change 2, {status: 'Rejected'}
+      expect(Test.last.name).to eq 'Old name'
+    end
+
+    it 'records the time that the change was rejected' do
+      Test.last.reject_change 1
+      expect(Test.last.get_change_number(1)[:updated_at]).to  be_within(1).of(Time.now)
+    end
+
   end
 end
