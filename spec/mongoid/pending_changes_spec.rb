@@ -5,6 +5,11 @@ class Test
   include Mongoid::PendingChanges
   field      :name,                type: String
   field      :age,                 type: Integer
+  field      :telephones,          type: Array
+  appendable :telephones
+
+  field      :emails,               type: Array
+
   belongs_to :TestRelation
 end
 
@@ -79,16 +84,29 @@ describe Mongoid::PendingChanges do
   end
 
   describe '#apply_change' do
+
     before :each do
       test = Test.create! name: 'Old name'
 
+      #1
       test.push_for_approval name: 'John',
                              age: 30
 
+      #2
       test.push_for_approval name: 'Mary',
                              age: 50
 
+      #3
       test.push_for_approval age: 10
+
+      #4 - appendable - single
+      test.push_for_approval telephone: '123'
+
+      #5 - appendable - array
+      test.push_for_approval telephone: %w(999 888 777)
+
+      #6 - non-appendable
+      test.push_for_approval emails: %w(email@email.com)
     end
 
     it 'applies the change by number' do
@@ -115,6 +133,24 @@ describe Mongoid::PendingChanges do
     it 'records the time that the change was applied' do
       Test.last.apply_change 3
       expect(Test.last.get_change_number(3)[:updated_at]).to  be_within(1).of(Time.now)
+    end
+
+    it 'appends single value on appendable fields' do
+      Test.last.update_attribute :telephone => %w(111 222 333)
+      Test.last.apply_change 4
+      expect(Text.last).to eq %w(111 222 333 123)
+    end
+
+    it 'appends all values on appendable fields' do
+      Test.last.update_attribute :telephone => %w(111 222 333)
+      Test.last.apply_change 5
+      expect(Text.last).to eq %w(111 222 333 999 888 777)
+    end
+
+    it 'replaces non-appendable fields' do
+      Test.last.update_attribute :emails => %w(m@email.com a@email.com)
+      Test.last.apply_change 6
+      expect(Text.last).to eq %w(email@email.com)
     end
 
   end
@@ -145,4 +181,5 @@ describe Mongoid::PendingChanges do
     end
 
   end
+
 end
