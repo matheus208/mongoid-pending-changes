@@ -10,6 +10,9 @@ This is an initial effort to develop an approval system to control changes to co
 
 ## Change Log
 
+v0.4.0: 
+Creating the `appendable` helper, which flags an Array field as a collection of values. When applying changes for appendable fields, instead of replacing them.
+
 v0.3.0:
 Adding methods '#apply_change' and '#reject_change'
 
@@ -80,10 +83,10 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 Bug reports and pull requests are welcome on GitHub at https://github.com/matheus208/mongoid-pending_changes.
 
 ## TODO list
- * Create a class to represent a "Change" (instead of using arrays
- * Have certain array fields to be "appendable". E.g.: an Array storing telephones flagged as appendable would behave differently regarding changes.
-   Instead of pushing another Array to replace it, we could append an object that will be pushed to the end instead.
+ * Create a class to represent a "Change" (instead of using arrays)
+ * Make `appendable` work for Hashes.
+ * Create options for `appendable`, like: whether or not it merges two arrays (or it just appends the second array to the first, creating a nested array), how to make a change remove or replace the field, instead of appending to it, etc...
  * Have a conversion modifier parameter when applying changes. E.g.: when applying change, pass a block that will receive the change data as a parameter, and could modify it (useful for converting between different versions maybe?)
- * Test if it works on relations. (I.e. changing a relation with a change)
+ * Test if it works on relations. (I.e. change with a relation swap)
  * Enforce type on changes.
  * ... Complete the TODO list

@@ -4,12 +4,16 @@ module Mongoid
   module PendingChanges
     extend ActiveSupport::Concern
     GLOBAL_PENDING_CHANGES_FLAG = 'mongoid_pending_changes_enabled'
+
     included do
       include Mongoid::Document
 
       field :version, type: Integer
       field :last_version, type: Integer
       field :changelist, type: Array
+
+      mattr_accessor :__appendable_fields
+
 
       before_create do
         self.version = 0
@@ -77,6 +81,13 @@ module Mongoid
       end
 
       private
+
+        def self.appendable(field)
+          #Make it private so we can one set a field as appendable on the Class definition, not on Runtime (is this the best idea?)
+          self.__appendable_fields ||= []
+          self.__appendable_fields << field
+        end
+
         def apply(data)
           backup = {}
 
@@ -87,10 +98,30 @@ module Mongoid
               backup[field] = self[field]
             end
             #Update
-            self[field] = value
+            incorporate_change field, value
           end
 
           backup
+        end
+
+        def incorporate_change(field, value)
+          #Check if this field is appendable or not
+
+          if self.__appendable_fields && self.__appendable_fields.include?(field.intern)
+            #Append
+            self[field] ||= []
+            if value.is_a? Array
+              #Append all values
+              self.set "#{field}" => self[field] + value
+            else
+              #Append single value
+              self.set "#{field}" => self[field].push(value)
+            end
+
+          else
+            #Replace
+            self.set "#{field}" => value
+          end
 
         end
 

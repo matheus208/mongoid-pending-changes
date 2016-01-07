@@ -100,10 +100,10 @@ describe Mongoid::PendingChanges do
       test.push_for_approval age: 10
 
       #4 - appendable - single
-      test.push_for_approval telephone: '123'
+      test.push_for_approval telephones: '123'
 
       #5 - appendable - array
-      test.push_for_approval telephone: %w(999 888 777)
+      test.push_for_approval telephones: %w(999 888 777)
 
       #6 - non-appendable
       test.push_for_approval emails: %w(email@email.com)
@@ -136,21 +136,21 @@ describe Mongoid::PendingChanges do
     end
 
     it 'appends single value on appendable fields' do
-      Test.last.update_attribute :telephone => %w(111 222 333)
+      Test.last.update_attribute :telephones, %w(111 222 333)
       Test.last.apply_change 4
-      expect(Text.last).to eq %w(111 222 333 123)
+      expect(Test.last.telephones).to eq %w(111 222 333 123)
     end
 
     it 'appends all values on appendable fields' do
-      Test.last.update_attribute :telephone => %w(111 222 333)
+      Test.last.update_attribute :telephones, %w(111 222 333)
       Test.last.apply_change 5
-      expect(Text.last).to eq %w(111 222 333 999 888 777)
+      expect(Test.last.telephones).to eq %w(111 222 333 999 888 777)
     end
 
     it 'replaces non-appendable fields' do
-      Test.last.update_attribute :emails => %w(m@email.com a@email.com)
+      Test.last.update_attribute :emails, %w(m@email.com a@email.com)
       Test.last.apply_change 6
-      expect(Text.last).to eq %w(email@email.com)
+      expect(Test.last.emails).to eq %w(email@email.com)
     end
 
   end
